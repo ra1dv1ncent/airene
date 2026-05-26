@@ -634,6 +634,100 @@
       .reasons-list { grid-template-columns: repeat(2, 1fr); }
       .reasons-header { grid-template-columns: 1fr 1fr; }
     }
+
+    #secret-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(26,25,22,0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  #secret-overlay.show {
+    display: flex;
+    animation: secretFadeIn 0.6s ease forwards;
+  }
+  #secret-box {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 56px 48px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: secretSlideUp 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  #secret-hearts-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light));
+  }
+  #secret-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  #secret-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 8vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    color: var(--dark);
+  }
+  #secret-title em { font-style: italic; color: var(--accent); }
+  #secret-msg {
+    font-size: 15px;
+    font-weight: 200;
+    line-height: 1.8;
+    color: var(--mid);
+    margin-bottom: 40px;
+  }
+  #secret-close {
+    background: none;
+    border: 1px solid var(--accent-light);
+    color: var(--mid);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 12px 32px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  #secret-close:hover { background: var(--accent-light); color: var(--dark); }
+  .heart-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10001;
+    font-size: 22px;
+    animation: heartFloat 3s ease forwards;
+    user-select: none;
+  }
+  @keyframes heartFloat {
+    0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-280px) scale(0.4) rotate(30deg); }
+  }
+  @keyframes secretFadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes secretSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes logoPulse {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+  }
+  .logo-pulse { animation: logoPulse 0.3s ease; }
   </style>
 </head>
 <body>
@@ -736,27 +830,27 @@
         </div>
         <div class="reason-item reveal delay-2">
           <span class="reason-num">02</span>
-          <h3 class="reason-title">your Kindness</h3>
+          <h3 class="reason-title">your kindness</h3>
           <p class="reason-text">you have one of the warmest hearts i've ever known. the way you care for others is something i admire endlessly. dili tawn ko magpatakag labay love</p>
         </div>
         <div class="reason-item reveal delay-3">
           <span class="reason-num">03</span>
-          <h3 class="reason-title">your Strength</h3>
+          <h3 class="reason-title">your strength</h3>
           <p class="reason-text">you face life with a quiet courage that inspires me every single day. you are stronger than you know. im sofer proud of you, lovee</p>
         </div>
         <div class="reason-item reveal delay-1">
           <span class="reason-num">04</span>
-          <h3 class="reason-title">your Laugh</h3>
+          <h3 class="reason-title">your laugh</h3>
           <p class="reason-text">your laughter is the best sound in any room. i'd do anything just to hear it, again and again. samot nas akong jokes hihi</p>
         </div>
         <div class="reason-item reveal delay-2">
           <span class="reason-num">05</span>
-          <h3 class="reason-title">your Patience</h3>
+          <h3 class="reason-title">your patience</h3>
           <p class="reason-text">you're patient with me in ways i don't always deserve. thank you for never giving up on us. i love you love</p>
         </div>
         <div class="reason-item reveal delay-3">
           <span class="reason-num">06</span>
-          <h3 class="reason-title">just You</h3>
+          <h3 class="reason-title">just you</h3>
           <p class="reason-text">honestly? it's everything. it's you, all of you, every part, that i love without condition. you being you</p>
         </div>
       </div>
@@ -829,7 +923,62 @@
     <p>made with love, just for airene &nbsp;·&nbsp; always yours</p>
   </footer>
 
+  <!-- SECRET OVERLAY -->
+  <div id="secret-overlay">
+    <div id="secret-box">
+      <div id="secret-hearts-top"></div>
+      <p id="secret-eyebrow">a secret, just for you 🤍</p>
+      <h2 id="secret-title">Happy Monthsary,<br><em>Airene.</em></h2>
+      <p id="secret-msg">Every month with you feels like the best one yet. Thank you for being mine. I love you more than any website could ever say. 🤍</p>
+      <button id="secret-close">close</button>
+    </div>
+  </div>
+
   <script>
+
+    // SECRET FEATURE — tap/click the logo 5 times
+    const logo = document.querySelector('.nav-logo');
+    const overlay = document.getElementById('secret-overlay');
+    const closeBtn = document.getElementById('secret-close');
+    let tapCount = 0, tapTimer = null;
+    
+    function spawnHearts() {
+      const emojis = ['🤍','💛','🌸','✨','💫'];
+      for (let i = 0; i < 28; i++) {
+        setTimeout(() => {
+          const h = document.createElement('div');
+          h.className = 'heart-particle';
+          h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          h.style.left = (10 + Math.random() * 80) + 'vw';
+          h.style.top = (40 + Math.random() * 40) + 'vh';
+          h.style.fontSize = (14 + Math.random() * 18) + 'px';
+          h.style.animationDuration = (2 + Math.random() * 2) + 's';
+          document.body.appendChild(h);
+          setTimeout(() => h.remove(), 4000);
+        }, i * 60);
+      }
+    }
+    
+    logo.addEventListener('click', () => {
+      tapCount++;
+      logo.classList.add('logo-pulse');
+      setTimeout(() => logo.classList.remove('logo-pulse'), 300);
+      clearTimeout(tapTimer);
+      if (tapCount >= 5) {
+        tapCount = 0;
+        spawnHearts();
+        overlay.classList.add('show');
+      } else {
+        tapTimer = setTimeout(() => { tapCount = 0; }, 2000);
+      }
+    });
+    
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('show');
+    });
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
     // CURSOR (desktop only)
     const cursor = document.getElementById('cursor');
     const ring = document.getElementById('cursor-ring');
